@@ -1,24 +1,25 @@
-# Imagen base
-FROM python:3.10
+# Imagen base ligera con Python 3.10
+FROM python:3.10-slim
 
-# Evita que Python guarde bytecode y use buffering
+# Evitar bytecode y buffering
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Google Cloud Run define la variable $PORT automáticamente
+# El puerto que Cloud Run asigna por defecto
 ENV PORT=8080
 
-# Directorio de trabajo
+# Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos del proyecto
+# Copiar todos los archivos del proyecto
 COPY . /app
 
 # Instalar dependencias
 RUN pip install --no-cache-dir fastapi uvicorn tensorflow pillow python-multipart
 
-# Exponer el puerto (solo informativo)
+# Mostrar el puerto (informativo)
 EXPOSE 8080
 
-# Comando de ejecución: usa el puerto que Cloud Run le asigne
-CMD exec uvicorn api:app --host 0.0.0.0 --port ${PORT}
+# --- comando de inicio ---
+# "api" debe coincidir con el nombre exacto del archivo api.py
+CMD ["python", "-m", "uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8080"]
